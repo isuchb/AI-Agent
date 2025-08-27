@@ -23,14 +23,13 @@ tools = [get_search_tool()]  # → pon aquí get_fetch_tool() si lo creaste
 agent = initialize_agent(
     tools=tools,
     llm=llm,
-    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,  # ← cambio clave
+    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,  # ← clave
     verbose=True,
     handle_parsing_errors=True,
     max_iterations=4,
     early_stopping_method="generate",
     agent_kwargs={"prefix": RESEARCH_PREFIX},
 )
-
 
 
 # ──────────────────────────────────  FUNCIÓN PRINCIPAL  ──────────────────────────────────────
@@ -99,13 +98,15 @@ def main() -> None:
         return
 
     # ----- Leer de stdin o pedir input -----
-    if not sys.stdin.isatty():
-        q = sys.stdin.read().strip()
-        print(ask_web(q))
-    else:
-        q = input("Pregunta: ").strip()
-        print(ask_web(q))
-
+    try:
+        print("REPL (Ctrl+C para salir)\n")
+        while True:
+            q = input("> ").strip()
+            if not q:
+                continue
+            print(ask_web(q), end="\n\n")
+    except (KeyboardInterrupt, EOFError):
+        print("\nAdiós.")
 
 if __name__ == "__main__":
     main()
